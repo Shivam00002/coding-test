@@ -39,9 +39,7 @@ app.post('/projects', upload.single('file'), async (req, res) => {
             Name,
             Description
         }
-        console.log(data)
         const addingProject = new ProjectsSchema(data)
-        console.log("adding" , addingProject)
         const insertProject = await addingProject.save()
         res.status(201).send(insertProject)
     } catch (e) {
