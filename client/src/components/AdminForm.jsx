@@ -3,7 +3,6 @@ import axios from "axios";
 import { useDataStore } from "../lib/zustand";
 import { useCookie } from "../Hooks/useCookie";
 import { useNavigate } from "react-router-dom";
-import Cookies from 'js-cookie';
 
 const AdminForm = () => {
   const [file, setFile] = useState(null);
@@ -11,17 +10,31 @@ const AdminForm = () => {
   const [desc, setDesc] = useState("");
   const { data, getData } = useDataStore();
   const navigate = useNavigate();
-  const  auth  = useCookie();
-
+  const auth = useCookie();
+  console.log("auth", auth);
   if (!auth) {
     navigate("/login");
   }
 
-  const handleLogout=()=>{
-
-    Cookies.remove('');
-
-  }
+  const handleLogout = () => {
+    const getCookieValue = (name) => {
+      const cookies = document.cookie.split("; ");
+      for (const cookie of cookies) {
+        const [cookieName, cookieValue] = cookie.split("=");
+        if (cookieName === name) {
+          return decodeURIComponent(cookieValue);
+        }
+      }
+      return null;
+    };
+    const jwtCookieValue = getCookieValue("jwt");
+    if (jwtCookieValue) {
+      document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      navigate("/login");
+    } else {
+      console.error("JWT cookie not found.");
+    }
+  };
 
   useEffect(() => {
     getData();
@@ -63,7 +76,12 @@ const AdminForm = () => {
         onSubmit={postData}
         className="rounded-lg shadow-lg md:w-[450px] mx-auto w-full h-fit p-4 border"
       >
-        <button onClick={handleLogout} className="px-3 rounded-lg shadow-lg bg-blue-500 text-sm text-white">Log Out </button>
+        <button
+          onClick={handleLogout}
+          className="px-3 rounded-lg shadow-lg bg-red-500 text-sm text-white"
+        >
+          Log Out{" "}
+        </button>
         <input
           onChange={(e) => setName(e.target.value)}
           className="px-2 w-full h-[30px] mt-2 p-2 border"
@@ -105,7 +123,8 @@ const AdminForm = () => {
                   {el.Description}
                 </p>
                 <p className="text-gray-500 text-sm font-semibold ">
-                  <span className="text-orange-600">Bids</span> {0}
+                  <span className="text-orange-600">Bids </span>
+                  {el.Bids}
                 </p>
                 <img
                   alt="img"

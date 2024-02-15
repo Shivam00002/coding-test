@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 dotenv.config();
+const mongoose = require('mongoose');
+
 const connectDb = require('./db/db');
 const ProjectsSchema = require('./models/projects');
 const port = process.env.PORT || 5000;
@@ -122,25 +124,54 @@ app.delete('/projects/:id', async (req, res) => {
     }
 });
 
-// Update project by ID
-app.put('/project/:id', async (req, res) => {
+// Increase the bis count by 1
+app.put('/update/:id', async (req, res) => {
     try {
-        const userId = req.params.id;
-        const Bids = req.body.Bids;
-        const updatedUser = await ProjectsSchema.findOneAndUpdate(
-            { _id: userId },
-            { $set: { Bids } },
+        const projectId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(projectId)) {
+            return res.status(400).json({ error: 'Invalid project ID' });
+        }
+        const updatedProject = await ProjectsSchema.findOneAndUpdate(
+            { _id: projectId },
+            { $inc: { Bids: 1 } },
             { new: true }
         );
-        if (!updatedUser) {
+        if (!updatedProject) {
             return res.status(404).json({ error: 'Project not found' });
         }
-        res.status(200).json(updatedUser);
+        res.status(200).json(updatedProject);
     } catch (error) {
         console.error(error);
         res.status(500).send(error);
     }
 });
+
+// Deccrease the bis count by 1
+app.put('/cancel/:id', async (req, res) => {
+    try {
+        const projectId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(projectId)) {
+            return res.status(400).json({ error: 'Invalid project ID' });
+        }
+        const updatedProject = await ProjectsSchema.findOneAndUpdate(
+            { _id: projectId },
+            { $inc: { Bids: -1 } },
+            { new: true }
+        );
+        if (!updatedProject) {
+            return res.status(404).json({ error: 'Project not found' });
+        }
+        res.status(200).json(updatedProject);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+    }
+});
+
+
+
+
+
 
 connectDb().then(() => {
     app.listen(port, () => {

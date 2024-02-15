@@ -17,6 +17,7 @@ export const useCookie = () => {
 
     try {
       const myCookieValue = getCookieValue("jwt");
+
       if (myCookieValue) {
         setAuth(true);
       } else {
