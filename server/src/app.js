@@ -11,9 +11,23 @@ const connectDb = require('./db/db');
 const ProjectsSchema = require('./models/projects');
 const port = process.env.PORT || 5000;
 
-
 app.use('/images', express.static('images'));
-app.use(cors());
+
+const whitelist = ["http://localhost:5173"];
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+    optionsSuccessStatus: 200,
+
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -22,13 +36,20 @@ app.get('/', async (req, res) => {
 });
 
 const myKey = 'shivamsdverdfvrergverfgrverfgverfgverfdgverdfgvedrfgvedrfgvedrfg';
+
 // Login route
 app.post('/login', (req, res) => {
-    const user = { email: 'dubey02shiv@gmail.com', password: 12345 };
+    let email = req.body.email;
+    let password = req.body.password;
+    if (email != 'dubey02shiv@gmail.com') {
+        res.status(500).send('Email is not valid')
+    }
+    if (password != 12345) {
+        res.status(500).send('Password is not valid')
+    }
     const secretKey = process.env.JWT_SECRET || myKey;
-    const token = jwt.sign(user, secretKey, { expiresIn: '1h' });
-
-    res.cookie('jwt', token, { httpOnly: true });
+    const token = jwt.sign({ email }, secretKey, { expiresIn: '2h' });
+    res.cookie('jwt', token, { httpOnly: false });
     res.status(200).send('Login successful');
 });
 
@@ -43,7 +64,6 @@ app.get('/protected', (req, res) => {
         const decoded = jwt.verify(receivedToken, secretKey);
         res.status(200).send(`Welcome, ${decoded.email}!`);
     } catch (err) {
-
         res.status(401).send('Unauthorized');
     }
 });

@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDataStore } from "../lib/zustand";
+import { useCookie } from "../Hooks/useCookie";
+import { useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
 
 const AdminForm = () => {
   const [file, setFile] = useState(null);
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const { data, getData } = useDataStore();
+  const navigate = useNavigate();
+  const  auth  = useCookie();
+
+  if (!auth) {
+    navigate("/login");
+  }
+
+  const handleLogout=()=>{
+
+    Cookies.remove('');
+
+  }
 
   useEffect(() => {
     getData();
@@ -48,6 +63,7 @@ const AdminForm = () => {
         onSubmit={postData}
         className="rounded-lg shadow-lg md:w-[450px] mx-auto w-full h-fit p-4 border"
       >
+        <button onClick={handleLogout} className="px-3 rounded-lg shadow-lg bg-blue-500 text-sm text-white">Log Out </button>
         <input
           onChange={(e) => setName(e.target.value)}
           className="px-2 w-full h-[30px] mt-2 p-2 border"
@@ -91,7 +107,11 @@ const AdminForm = () => {
                 <p className="text-gray-500 text-sm font-semibold ">
                   <span className="text-orange-600">Bids</span> {0}
                 </p>
-                <img alt="img" className="w-[150px] mx-auto h-[150px]" src={`http://localhost:5000/${el.Attachment}`} />
+                <img
+                  alt="img"
+                  className="w-[150px] mx-auto h-[150px]"
+                  src={`http://localhost:5000/${el.Attachment}`}
+                />
                 <button
                   onClick={() => handleDelte(el._id)}
                   className="font-semibold py-[2px] mt-2 text-white px-2 text-sm bg-orange-600 hover:bg-black rounded-md w-full"

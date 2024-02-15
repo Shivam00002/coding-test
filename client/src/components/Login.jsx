@@ -1,26 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useCookie } from "../Hooks/useCookie";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const auth = useCookie();
+
+  
+  useEffect(() => {
+    if (auth) {
+      navigate("/admin");
+    }
+  }, [auth, navigate]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const response = await axios.post("http://localhost:5000/login", {
-        email,
-        password,
-      });
-      const token = response.data.token;
-      // Secure and HttpOnly flags, SameSite attribute
-      const cookieOptions = "path=/; Secure; HttpOnly; SameSite=Lax";
-      // Optionally set token expiration if available in the response
-      // const tokenExpiration = new Date(response.data.expiresAt);
-      // cookieOptions += `; expires=${tokenExpiration.toUTCString()}`;
-      let x =  document.cookie = `jwt=${token}; ${cookieOptions}`;
-      console.log(x)
+      const response = await axios.post(
+        "http://localhost:5000/login",
+        {
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      const token = response.data;
+      if (token) {
+        navigate("/admin");
+      }
+      console.log("Token", token);
     } catch (error) {
       console.error(error);
     }
