@@ -6,6 +6,7 @@ const AllProjects = () => {
   const { data, getData } = useDataStore();
   const [bidProjects, setBidProjects] = useState([]);
 
+
   const handleBids = async (id) => {
     try {
       if (!bidProjects.includes(id)) {
