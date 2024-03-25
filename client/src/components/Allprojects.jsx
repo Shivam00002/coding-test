@@ -18,6 +18,7 @@ const AllProjects = () => {
         setBidProjects(bidProjects.filter((projectId) => projectId !== id));
       }
 
+
       getData();
     } catch (e) {
       console.log(e);
