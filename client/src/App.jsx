@@ -7,6 +7,7 @@ import Home from "./components/Home";
 
 function App() {
   return (
+
     <>
       <div className="w-full h-fit md:px-10 px-2 py-2 flex justify-between p-2 bg-blue-500 text-white">
         <a href="/">
