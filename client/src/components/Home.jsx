@@ -4,7 +4,6 @@ import AllProjects from "./Allprojects";
 const Home = () => {
   return (
     <>
-
       <AllProjects />
     </>
   );
