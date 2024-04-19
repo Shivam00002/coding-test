@@ -17,6 +17,7 @@ const AllProjects = () => {
         await axios.put(`http://localhost:5000/cancel/${id}`);
         setBidProjects(bidProjects.filter((projectId) => projectId !== id));
       }
+
       getData();
     } catch (e) {
       console.log(e);
