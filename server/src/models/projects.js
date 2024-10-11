@@ -8,6 +8,7 @@ const projectSchema = new mongoose.Schema({
     Bids: Number
 })
 
+
 const ProjectsSchema = new mongoose.model('Projects', projectSchema)
 
 module.exports = ProjectsSchema
